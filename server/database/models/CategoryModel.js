@@ -31,6 +31,9 @@ module.exports =( sequelize, DataTypes)=>{
                     through: 'ProductCategory',
                    foreignKey: 'category_id',
         })
+        Category.belongsTo(models.Department, {
+            foreignKey: 'department_id'
+        })
            }
   
      
