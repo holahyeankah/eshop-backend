@@ -4,14 +4,14 @@ const { Product, AttributeValue, Category, Department } = db;
 
 
 const getAllProduct= (req,res) => {
-    const { page, limit, searchTerm } = req.query;
+    const { page, limit, searchTerm, department, category } = req.query;
     const offset = parseInt((page -1), 10) * limit;
     const queryBuilder = {
         distinct: true,
-        include: {
+        include: [{
             model: AttributeValue,
             // attribute:[{model: AttributeValue}]
-        },
+        }],
          offset: parseFloat(offset),
          limit: parseFloat(limit)
     }
@@ -31,6 +31,21 @@ const getAllProduct= (req,res) => {
         ]
         }
     }
+
+    if (department) {
+        queryBuilder.include[1] = {
+            model: Category,
+            include: [{
+                model: Department,
+                where: {
+                    name: {
+                        [Op.like]: `%${req.query.department}%`
+                    }
+                }
+            }]
+        }
+    }
+
        Product.findAndCountAll(queryBuilder)
      .then(product => {
          if (product.rows.length < 1) {
